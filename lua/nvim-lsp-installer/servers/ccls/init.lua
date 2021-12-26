@@ -39,29 +39,30 @@ return function(name, root_dir)
         ---@param os_distribution table<string, string>|nil
         ---@return string|nil
         local function get_archive_name(version, os_distribution)
-            local name_template = coalesce(when(
-                platform.is_linux,
-                coalesce(
-                    when(
-                        platform.arch == "x64",
-                        coalesce(
-                            when(
-                                os_distribution.id == "ubuntu" and os_distribution.version.major >= 20,
-                                "clang+llvm-%s-x86_64-linux-gnu-ubuntu-20.04"
-                            ),
-                            when(
-                                os_distribution.id == "ubuntu" and os_distribution.version.major >= 16,
-                                "clang+llvm-%s-x86_64-linux-gnu-ubuntu-16.04"
-                            ),
-                            -- the Ubuntu dist is allegedly the most suitable cross-platform one, so we default to it
-                            "clang+llvm-%s-x86_64-linux-gnu-ubuntu-16.04"
-                        )
-                    ),
-                    when(platform.arch == "arm64", "clang+llvm-%s-aarch64-linux-gnu"),
-                    when(platform.arch == "armv7", "clang+llvm-%s-armv7a-linux-gnueabihf"),
-                    when(platform.arch == "x86", "clang+llvm-%s-i386-unknown-freebsd13")
+            local name_template = coalesce(
+                when(
+                    platform.is_linux,
+                    coalesce(
+                        when(
+                            platform.arch == "x64",
+                            coalesce(
+                                when(
+                                    os_distribution.id == "ubuntu" and os_distribution.version.major >= 20,
+                                    "clang+llvm-%s-x86_64-linux-gnu-ubuntu-20.04"
+                                ),
+                                when(
+                                    os_distribution.id == "ubuntu" and os_distribution.version.major >= 16,
+                                    "clang+llvm-%s-x86_64-linux-gnu-ubuntu-16.04"
+                                ),
+                                "clang+llvm-%s-amd64-unknown-freebsd13"
+                            )
+                        ),
+                        when(platform.arch == "arm64", "clang+llvm-%s-aarch64-linux-gnu"),
+                        when(platform.arch == "armv7", "clang+llvm-%s-armv7a-linux-gnueabihf"),
+                        when(platform.arch == "x86", "clang+llvm-%s-i386-unknown-freebsd13")
+                    )
                 )
-            ))
+            )
             return name_template and name_template:format(version)
         end
 
